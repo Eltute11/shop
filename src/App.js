@@ -1,8 +1,11 @@
-import React, {Component} from 'react';
-import './styles/App.css';
+import React from 'react';
+
 import swal from 'sweetalert';
 
-class App extends Component {
+import './static/styles/App.css';
+import Header from './components/header.js';
+
+class App extends React.Component {
 
   token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZDIwZTc2YjhmYTY3NTAwNmQwMGU0NTAiLCJpYXQiOjE1NjI0Mzc0ODN9.oeeX9Vx0vrWNZK5knmWLjcMCvpNQQWlvvpcQAMxqqf8';
 
@@ -166,30 +169,42 @@ class App extends Component {
     }else{
       return (
         <div className="App">
-          <h1>{title}</h1>
-          <h2>Estos son tus datos {profile.name}</h2>
-          <ul>
-            <li>ID {profile._id}</li>
-            <li>My points {profile.points}</li>
-            <li>Create date {profile.createDate}</li>
-          </ul>
-          <button onClick={this.updatePoints(1000)}>Incrementar puntos</button>
-          <div></div>
-          <div></div>
-          
-          {products.map(product => (
-            <div className="card" key={product._id}>
-              <img src={product.img.url} className="card-img-top" alt={product.name}></img>
-              <div className="card-body">
-                <h5 className="card-title">{product.name}</h5>
-                <h6 className="card-subtitle mb-2 text-muted">{product.category}</h6>
-                <button onClick={this.redeemProduct(product._id, product.name)} className="card-link">Canjear por {product.cost}pts</button>
+          <Header></Header>
+          <main className="container">
+            <div className="container">
+              <div className="hero"></div>
+            </div>
+
+            <div className="container">
+              <div className="row justify-content-between align-items-center">
+                <div className="col-auto">
+                  <h1>Electrónica</h1>
+                </div>
               </div>
             </div>
-          ))}
-          
-
-
+            
+            <h2>Estos son tus datos {profile.name}</h2>
+            <ul>
+              <li>ID {profile._id}</li>
+              <li>My points {profile.points}</li>
+              <li>Create date {profile.createDate}</li>
+            </ul>
+            <button onClick={this.updatePoints(1000)}>Incrementar puntos</button>
+            <div></div>
+            <div></div>
+            
+            {products.map(product => (
+              <div className="card" key={product._id}>
+                <img src={product.img.url} className="card-img-top" alt={product.name}></img>
+                <div className="card-body">
+                  <h5 className="card-title">{product.name}</h5>
+                  <h6 className="card-subtitle mb-2 text-muted">{product.category}</h6>
+                  <button onClick={this.redeemProduct(product._id, product.name)} className="card-link">Canjear por {product.cost}pts</button>
+                </div>
+              </div>
+            ))}
+          </main>
+        
         </div>
       );
     }
