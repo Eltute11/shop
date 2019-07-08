@@ -1,3 +1,74 @@
+html, body{
+    font-family: 'Nunito', sans-serif;
+}
+html.zeynep-opened {
+	overflow-x: hidden;
+}
+
+html.zeynep-opened body {
+	position: fixed;
+	width: 100%;
+}
+
+html.zeynep-opened .zeynep {
+	pointer-events: auto;
+}
+
+.zeynep {
+	background-color: #ffffff;
+	bottom: 0;
+	color: #404143;
+	left: 0;
+	overflow: hidden;
+	overflow-y: auto;
+	pointer-events: none;
+	position: fixed;
+	top: 0;
+	transform: translateX(-100%);
+	z-index: 1011;
+	width: 0;
+	-webkit-overflow-scrolling: touch;
+}
+
+html:not(.no-transition) body,
+.zeynep:not(.no-transition),
+.zeynep .submenu:not(.no-transition) {
+	transition: all 375ms;
+	transition-property: left, right, transform;
+}
+
+.zeynep-overlay {
+	background-color: rgba(0, 0, 0, .42);;
+	bottom: 0;
+	display: none;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 1010;
+}
+
+.zeynep-opened .zeynep-overlay {
+	display: block;
+}
+
+.hero{
+    width: 100%;
+    min-height: 300px;
+    background-image: url('../images/header-x1.png');
+    background-position: center right;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 10px;
+    margin-top: 80px;
+    margin-bottom: 80px;
+}
+h1{
+    font-weight: 700;
+}
+h5, .h5{
+    font-size: 1.15rem;
+}
 @media screen and (max-width: 1140px){
     .container{
         max-width: 1140px;

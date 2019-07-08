@@ -3,7 +3,10 @@ import React from 'react';
 import swal from 'sweetalert';
 
 import './static/styles/App.css';
-import Header from './components/header.js';
+import './static/styles/main.css';
+import logo from './static/images/aerolab-logo.svg';
+import imgUser from './static/images/user.svg';
+import banner from './static/images/header-x1.png';
 
 class App extends React.Component {
 
@@ -157,6 +160,18 @@ class App extends React.Component {
     });
   }
 
+  btnRedeem = (points, cost, p_id, p_name) => () => {
+    console.log(points);
+    console.log(cost);
+    console.log(p_id);
+    console.log(p_name);
+    if(cost <= points){
+      return <button onClick={this.redeemProduct(p_id, p_name)} className="btn btn-block btn-primary mt-2">Canjear ahora</button>;
+    }else{
+      return <button onClick={this.redeemProduct(p_id, p_name)} className="btn btn-block btn-disable mt-2">No alcanza</button>;
+    }
+  }
+
   componentDidMount() {
     this.getProfile();
     this.getProducts();
@@ -169,41 +184,65 @@ class App extends React.Component {
     }else{
       return (
         <div className="App">
-          <Header></Header>
+          <div className="zeynep"></div>
+
+          <header>
+            <div className="container">
+                <div className="row justify-content-between align-items-center">
+                  <div className="col-auto">
+                    <img src={logo} alt="logo" />
+                  </div>
+                  <div className="col-auto d-flex align-items-center">
+                    <span className="pr-4">Hola <b>{profile.name}</b>, tienes <b>{profile.points}pts</b></span>
+                    {/* <img src={imgUser} alt="user" className="user btn-open"/> */}
+                    <button type="button"  onClick={this.updatePoints(1000)} className="btn btn-outline-secondary">+ Puntos</button>
+                  </div>
+                </div>
+              </div>
+          </header>
           <main className="container">
             <div className="container">
-              <div className="hero"></div>
+              <div className="hero">
+                {/* <img src={banner} className="img-fluid" alt="banner" /> */}
+              </div>
             </div>
 
             <div className="container">
               <div className="row justify-content-between align-items-center">
                 <div className="col-auto">
-                  <h1>Electrónica</h1>
+                  <h1>Electrónica 💻</h1>
                 </div>
+                <div className="col-auto"><h3>{profile.points}pts Disponibles</h3></div>
               </div>
             </div>
             
-            <h2>Estos son tus datos {profile.name}</h2>
-            <ul>
-              <li>ID {profile._id}</li>
-              <li>My points {profile.points}</li>
-              <li>Create date {profile.createDate}</li>
-            </ul>
-            <button onClick={this.updatePoints(1000)}>Incrementar puntos</button>
-            <div></div>
-            <div></div>
-            
-            {products.map(product => (
-              <div className="card" key={product._id}>
-                <img src={product.img.url} className="card-img-top" alt={product.name}></img>
-                <div className="card-body">
-                  <h5 className="card-title">{product.name}</h5>
-                  <h6 className="card-subtitle mb-2 text-muted">{product.category}</h6>
-                  <button onClick={this.redeemProduct(product._id, product.name)} className="card-link">Canjear por {product.cost}pts</button>
-                </div>
+            <div className="container my-5">
+              <div className="row">
+                {products.map(product => (
+                  <div className="col-12 col-md-4 col-lg-3 mb-3" key={product._id}>
+                    <div className="card">
+                      
+                      <img src={product.img.url} className="card-img-top" alt={product.name}></img>
+                      <div className="card-body">
+                        <h5 className="card-title">{product.name}</h5>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <h6 className="card-subtitle text-muted">{product.category}</h6>
+                          <h5><span className="badge badge-pill badge-dark">{product.cost}pts</span></h5>
+                        </div>
+                        {/* {this.btnRedeem(profile.points, product.cost, product._id, product.name)} */}
+                        <button onClick={this.redeemProduct(product._id, product.name)} className="btn btn-block btn-primary mt-2">Canjear ahora</button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            
+            
           </main>
+          
+
+          <div className="zeynep-overlay"></div>
         
         </div>
       );
