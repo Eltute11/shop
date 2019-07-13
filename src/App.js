@@ -1,12 +1,15 @@
 import React from 'react';
 
 import swal from 'sweetalert';
+import InputRange from 'react-input-range';
+import 'react-input-range/lib/css/index.css';
 
-import './static/styles/App.css';
-import './static/styles/main.css';
+import './static/css/App.css';
+import './static/css/main.css';
 import logo from './static/images/aerolab-logo.svg';
 import imgUser from './static/images/user.svg';
 import banner from './static/images/header-x1.png';
+import BtnRedeem from './components/btnRedeem';
 
 class App extends React.Component {
 
@@ -19,7 +22,10 @@ class App extends React.Component {
       title: 'Mis datos',
       profile: {},
       products: {},
-      error: null
+      maxProducts: {},
+      maxCost: 0,
+      error: null,
+      updatingMaxCost: true
     }
   }
 
@@ -45,8 +51,13 @@ class App extends React.Component {
     .then(
       (result) => {
         if(result.error == null) {
+          // Ahora que tenemos los pts del usuario, solicitamos los productos
+          if(this.state.updatingMaxCost){
+            this.getProducts();
+          }
           this.setState({
-            profile: result
+            profile: result,
+            maxCost: result.points
           });
         }else{
           const error = new Error(result.error);
@@ -76,8 +87,17 @@ class App extends React.Component {
         if(result.error == null) {
           this.setState({
             isLoaded: true,
-            products: result
+            products: result,
+            maxProducts: result
           });
+          // Si los puntos del usuario fueron modificados, actualizamos los productos a mostrar
+          if(this.state.updatingMaxCost){
+            this.maxCostProduct(this.state.maxCost);
+            this.setState({
+              updatingMaxCost: false
+            })
+          }
+          
         }else{
           const error = new Error(result.error);
           throw error;
@@ -112,6 +132,8 @@ class App extends React.Component {
         if(result.error == null) {
           swal('Felicitaciones!', 'Ahora tienes ' + result['New Points'] + ' puntos!', "success");
           this.getProfile();
+          // Actualizamos los productos que puede canjear
+          this.maxCostProduct(result['New Points']);
         }else{
           const error = new Error(result.error);
           throw error;
@@ -145,6 +167,9 @@ class App extends React.Component {
       (result) => {
         if(result.error == null) {
           swal('Felicitaciones!', 'Tu canje por ' + name + ' ha sido realizado exitosamente!', "success");
+          this.setState({
+            updatingMaxCost: true
+          })
           this.getProfile();
         }else{
           const error = new Error(result.error);
@@ -160,25 +185,17 @@ class App extends React.Component {
     });
   }
 
-  btnRedeem = (points, cost, p_id, p_name) => () => {
-    console.log(points);
-    console.log(cost);
-    console.log(p_id);
-    console.log(p_name);
-    if(cost <= points){
-      return <button onClick={this.redeemProduct(p_id, p_name)} className="btn btn-block btn-primary mt-2">Canjear ahora</button>;
-    }else{
-      return <button onClick={this.redeemProduct(p_id, p_name)} className="btn btn-block btn-disable mt-2">No alcanza</button>;
-    }
+  maxCostProduct(cost){
+    const reduceProduct = this.state.products.filter(product => product.cost <= cost);
+    this.setState({maxProducts: reduceProduct});
   }
 
   componentDidMount() {
     this.getProfile();
-    this.getProducts();
   }
 
   render() {
-    const { error, isLoaded, profile, title, products } = this.state;
+    const { error, isLoaded, profile, maxProducts, products } = this.state;
     if(!isLoaded || error){
       return <div>Loading...</div>;
     }else{
@@ -212,13 +229,41 @@ class App extends React.Component {
                 <div className="col-auto">
                   <h1>Electrónica 💻</h1>
                 </div>
-                <div className="col-auto"><h3>{profile.points}pts Disponibles</h3></div>
+                <div className="col-auto">
+                  <h3>{profile.points}pts Disponibles</h3>
+                </div>
+              </div>
+              <div className="row justify-content-between align-items-center my-4">
+                <div className="col-lg-3 d-flex flex-row">
+                  <div><p>Filtrar por puntos</p></div> 
+                  <InputRange
+                    maxValue={4000}
+                    minValue={0}
+                    value={this.state.maxCost}
+                    onChange={(maxCost) => {
+                      this.setState({ maxCost });
+                    }}
+                    onChangeComplete={(newMaxCost) => {
+                      this.maxCostProduct(newMaxCost);
+                    }} />
+                </div>
+                <div className="col-auto">
+                  <div className="dropdown ml-3">
+                    <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Ordenar por menos puntos
+                    </button>
+                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                      <a className="dropdown-item" href="#">más puntos</a>
+                      <a className="dropdown-item" href="#">menos puntos</a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             
             <div className="container my-5">
               <div className="row">
-                {products.map(product => (
+                {maxProducts.map(product => (
                   <div className="col-12 col-md-4 col-lg-3 mb-3" key={product._id}>
                     <div className="card">
                       
@@ -229,8 +274,7 @@ class App extends React.Component {
                           <h6 className="card-subtitle text-muted">{product.category}</h6>
                           <h5><span className="badge badge-pill badge-dark">{product.cost}pts</span></h5>
                         </div>
-                        {/* {this.btnRedeem(profile.points, product.cost, product._id, product.name)} */}
-                        <button onClick={this.redeemProduct(product._id, product.name)} className="btn btn-block btn-primary mt-2">Canjear ahora</button>
+                        <BtnRedeem points={profile.points} cost={product.cost} onClick={this.redeemProduct(product._id, product.name)} />
                       </div>
                     </div>
                   </div>
