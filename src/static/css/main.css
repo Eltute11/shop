@@ -44,6 +44,30 @@ h5, .h5{
     text-overflow: ellipsis;
     overflow: hidden;
 }
+.btn-points{
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid #ff7b00;
+    color: #ff7b00;
+}
+.btn-points:hover{
+    background-color: #ff7b00;
+    border-color: #ff7b00;
+    color: #FFFFFF;
+}
+.btn-primary{
+    background-color: #ff7b00;
+    border-color: #ff7b00;
+}
+.btn-primary:hover{
+    background-color: #ef7503;
+    border-color: #ef7503;
+}
+.btn-primary.disabled, 
+.btn-primary:disabled {
+    background-color: #ff7b00b0;
+    border-color: #ff7b00b0;
+}
 /* SIDEBAR */
 .zeynep {
     background-color: #ffffff;
@@ -83,5 +107,13 @@ h5, .h5{
 @media screen and (max-width: 1140px){
     .container{
         max-width: 1140px;
+    }
+}
+@media screen and (max-width: 768px){
+    h6{
+        font-size: 0.8rem;
+    }
+    .zeynep .history span{
+        font-size: 0.8rem;
     }
 }

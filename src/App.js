@@ -28,8 +28,9 @@ class App extends React.Component {
       maxCost: 0,
       error: null,
       updatingMaxCost: true,
-      txtOrder: 'minor',
-      sidebarOpen: false 
+      txtOrder: 'most recent',
+      sidebarOpen: false ,
+      countHistory: 0
     }
   }
 
@@ -128,7 +129,8 @@ class App extends React.Component {
       (result) => {
         if(result.error == null) {
           this.setState({
-            history: result
+            history: result,
+            countHistory: result.length
           });
         }else{
           const error = new Error(result.error);
@@ -231,11 +233,11 @@ class App extends React.Component {
     if(order === 'DESC'){
       newOrderProducts = newOrderProducts.reverse();
       this.setState({
-        txtOrder: 'more'
+        txtOrder: 'highest points'
       })
     }else{
       this.setState({
-        txtOrder: 'minor'
+        txtOrder: 'lowest points'
       })
     }
     this.setState({
@@ -261,7 +263,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { error, isLoaded, profile, maxProducts, txtOrder, history } = this.state;
+    const { error, isLoaded, profile, maxProducts, txtOrder, history, countHistory } = this.state;
     if(!isLoaded || error){
       return <div>Loading...</div>;
     }else{
@@ -271,7 +273,7 @@ class App extends React.Component {
             <h3>My History <span role="img" aria-label="electronic">🛒</span></h3>
             <div className="mt-4">
               {history.map(purchase => (
-                <div className="d-flex flex-row justify-content-between align-items-center my-3">
+                <div className="d-flex flex-row justify-content-between align-items-center my-3 history" key={purchase.createDate}>
                   <div className="col-4 pl-0">
                   <img src={purchase.img.url} className="img-fluid" alt={purchase.name}></img>
                   </div>
@@ -287,26 +289,30 @@ class App extends React.Component {
           </div>
 
           <main>
-            <header>
+            <header className="mb-5 mb-sm-0">
               <div className="container">
                   <div className="row justify-content-between align-items-center">
                     <div className="col-auto">
                       <img src={logo} alt="logo" />
                     </div>
                     <div className="col-auto d-flex align-items-center">
-                      <span className="pr-4">Hello <b>{profile.name}</b>, you have <b>{profile.points}pts</b></span>
+                      <span className="pr-3 d-none d-sm-flex">Hello <b>{profile.name}</b>, you have <b>{profile.points}pts</b></span>
+                      <span className="pr-3 d-sm-none"><b>{profile.points}pts</b></span>
                       {/* <img src={imgUser} alt="user" className="user btn-open"/> */}
-                      <button className="btn btn-outline-primary mx-3" onClick={this.openSidebar}>History</button>
-                      <button type="button"  onClick={this.updatePoints(1000)} className="btn btn-outline-secondary">+ Pts</button>
+                      <div className="fa-2x mx-2" onClick={this.openSidebar} style={{cursor: 'pointer'}}>
+                        <span className="fa-layers fa-fw" key="fa-layer">
+                          <i className="fas fa-shopping-basket"></i>
+                          <span className="fa-layers-counter" style={{background: '#ff7c00'}}>{countHistory}</span>
+                        </span>
+                      </div>
+                      <button type="button"  onClick={this.updatePoints(1000)} className="btn btn-points">more points</button>
                     </div>
                   </div>
                 </div>
             </header>
-            <div className="container">
-              <div className="container">
-                <div className="hero">
+            <div className="container pt-5 pt-sm-0">
+              <div className="hero d-none d-sm-flex">
                   {/* <img src={banner} className="img-fluid" alt="banner" /> */}
-                </div>
               </div>
 
               <div className="container">
@@ -314,13 +320,13 @@ class App extends React.Component {
                   <div className="col-auto">
                     <h1>Electronic <span role="img" aria-label="electronic">💻</span></h1>
                   </div>
-                  <div className="col-auto">
+                  <div className="col-auto d-none d-sm-flex">
                     <h3>{profile.points}pts available</h3>
                   </div>
                 </div>
                 <div className="row justify-content-between align-items-center my-4">
                   <div className="col-lg d-flex flex-row filter">
-                    <span className="filter-title">Filter by points</span> 
+                    <span className="filter-title">Sort by points</span> 
                     <InputRange
                       maxValue={4000}
                       minValue={0}
@@ -332,14 +338,14 @@ class App extends React.Component {
                         this.maxCostProduct(newMaxCost);
                       }} />
                   </div>
-                  <div className="col-auto">
+                  <div className="col-12 col-lg-auto text-center text-lg-left mt-5 mt-lg-0">
                     <div className="dropdown ml-3">
                       <button className="dropdown-toggle" type="button" id="dropdownOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Order by {txtOrder} points
+                        Sort by {txtOrder}
                       </button>
                       <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownOrder">
-                        <span className="dropdown-item" onClick={this.orderProduct('DESC') }>more points</span>
-                        <span className="dropdown-item" onClick={this.orderProduct('ASC') }>minor points</span>
+                        <span className="dropdown-item" onClick={this.orderProduct('DESC') }>highest points</span>
+                        <span className="dropdown-item" onClick={this.orderProduct('ASC') }>lowest points</span>
                       </div>
                     </div>
                   </div>
