@@ -44,6 +44,42 @@ h5, .h5{
     text-overflow: ellipsis;
     overflow: hidden;
 }
+/* SIDEBAR */
+.zeynep {
+    background-color: #ffffff;
+    bottom: 0;
+    color: #404143;
+    right: 0;
+    overflow: hidden;
+    overflow-y: auto;
+    /* pointer-events: none; */
+    position: fixed;
+    top: 0;
+    transform: translateX(100%);
+    z-index: 1011;
+	width: 500px;
+	max-width: 80%;
+	-webkit-overflow-scrolling: touch;
+	transition: all 375ms;
+	transition-property: left, right, transform;
+	padding: 100px 50px 50px;
+}
+.zeynep-overlay {
+    background-color: rgba(0, 0, 0, .42);
+    bottom: 0;
+    display: none;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 1010;
+}
+.zeynep-opened .zeynep-overlay {
+    display: block;
+}
+.zeynep-opened .zeynep {
+    transform: translateX(0px);
+}
 @media screen and (max-width: 1140px){
     .container{
         max-width: 1140px;

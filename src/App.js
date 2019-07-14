@@ -17,16 +17,19 @@ class App extends React.Component {
 
   constructor(props){
     super(props);
+    this.app = React.createRef()
     this.state={
       isLoaded: false,
       title: 'Mis datos',
       profile: {},
+      history: {},
       products: {},
       maxProducts: {},
       maxCost: 0,
       error: null,
       updatingMaxCost: true,
-      txtOrder: 'minor'
+      txtOrder: 'minor',
+      sidebarOpen: false 
     }
   }
 
@@ -98,6 +101,35 @@ class App extends React.Component {
               updatingMaxCost: false
             })
           }
+        }else{
+          const error = new Error(result.error);
+          throw error;
+        }     
+      },
+      (error) => {
+        this.setError();
+      }
+    )
+    .catch( err => {
+      swal('Oops!', err.message, "error");
+    });
+  }
+
+  getHistory = () => {
+    fetch('https://coding-challenge-api.aerolab.co/user/history', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.token,
+      }
+    })
+    .then(res => res.json())
+    .then(
+      (result) => {
+        if(result.error == null) {
+          this.setState({
+            history: result
+          });
         }else{
           const error = new Error(result.error);
           throw error;
@@ -211,103 +243,135 @@ class App extends React.Component {
     })
   }
 
+  openSidebar = () => {
+    this.setState({
+      sidebarOpen: true
+    })
+  }
+
+  closeSidebar = () => {
+    this.setState({
+      sidebarOpen: false
+    })
+  }
+
   componentDidMount() {
     this.getProfile();
+    this.getHistory();
   }
 
   render() {
-    const { error, isLoaded, profile, maxProducts, txtOrder } = this.state;
+    const { error, isLoaded, profile, maxProducts, txtOrder, history } = this.state;
     if(!isLoaded || error){
       return <div>Loading...</div>;
     }else{
       return (
-        <div className="App">
-          <div className="zeynep"></div>
-
-          <header>
-            <div className="container">
-                <div className="row justify-content-between align-items-center">
-                  <div className="col-auto">
-                    <img src={logo} alt="logo" />
+        <div className={`App ${this.state.sidebarOpen ? " zeynep-opened " : ""}`} ref={this.app}>
+          <div className="zeynep">
+            <h3>My History <span role="img" aria-label="electronic">🛒</span></h3>
+            <div className="mt-4">
+              {history.map(purchase => (
+                <div className="d-flex flex-row justify-content-between align-items-center my-3">
+                  <div className="col-4 pl-0">
+                  <img src={purchase.img.url} className="img-fluid" alt={purchase.name}></img>
                   </div>
-                  <div className="col-auto d-flex align-items-center">
-                    <span className="pr-4">Hello <b>{profile.name}</b>, you have <b>{profile.points}pts</b></span>
-                    {/* <img src={imgUser} alt="user" className="user btn-open"/> */}
-                    <button type="button"  onClick={this.updatePoints(1000)} className="btn btn-outline-secondary">+ Pts</button>
+                  <div className="col">
+                    <h6 className="mb-0">{purchase.name}</h6>
+                  </div>
+                  <div className="col-auto pr-0">
+                    <span className="text-muted">{purchase.cost}pts</span>
                   </div>
                 </div>
-              </div>
-          </header>
-          <main className="container">
-            <div className="container">
-              <div className="hero">
-                {/* <img src={banner} className="img-fluid" alt="banner" /> */}
-              </div>
+              ))}
             </div>
+          </div>
 
-            <div className="container">
-              <div className="row justify-content-between align-items-center">
-                <div className="col-auto">
-                  <h1>Electronic <span role="img" aria-label="electronic">💻</span></h1>
-                </div>
-                <div className="col-auto">
-                  <h3>{profile.points}pts available</h3>
-                </div>
-              </div>
-              <div className="row justify-content-between align-items-center my-4">
-                <div className="col-lg d-flex flex-row filter">
-                  <span className="filter-title">Filter by points</span> 
-                  <InputRange
-                    maxValue={4000}
-                    minValue={0}
-                    value={this.state.maxCost}
-                    onChange={(maxCost) => {
-                      this.setState({ maxCost });
-                    }}
-                    onChangeComplete={(newMaxCost) => {
-                      this.maxCostProduct(newMaxCost);
-                    }} />
-                </div>
-                <div className="col-auto">
-                  <div className="dropdown ml-3">
-                    <button className="dropdown-toggle" type="button" id="dropdownOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Order by {txtOrder} points
-                    </button>
-                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownOrder">
-                      <span className="dropdown-item" onClick={this.orderProduct('DESC') }>more points</span>
-                      <span className="dropdown-item" onClick={this.orderProduct('ASC') }>minor points</span>
+          <main>
+            <header>
+              <div className="container">
+                  <div className="row justify-content-between align-items-center">
+                    <div className="col-auto">
+                      <img src={logo} alt="logo" />
+                    </div>
+                    <div className="col-auto d-flex align-items-center">
+                      <span className="pr-4">Hello <b>{profile.name}</b>, you have <b>{profile.points}pts</b></span>
+                      {/* <img src={imgUser} alt="user" className="user btn-open"/> */}
+                      <button className="btn btn-outline-primary mx-3" onClick={this.openSidebar}>History</button>
+                      <button type="button"  onClick={this.updatePoints(1000)} className="btn btn-outline-secondary">+ Pts</button>
                     </div>
                   </div>
                 </div>
+            </header>
+            <div className="container">
+              <div className="container">
+                <div className="hero">
+                  {/* <img src={banner} className="img-fluid" alt="banner" /> */}
+                </div>
               </div>
-            </div>
-            
-            <div className="container my-5">
-              <div className="row">
-                {maxProducts.map(product => (
-                  <div className="col-12 col-md-4 col-lg-3 mb-3" key={product._id}>
-                    <div className="card">
-                      
-                      <img src={product.img.url} className="card-img-top" alt={product.name}></img>
-                      <div className="card-body">
-                        <h5 className="card-title">{product.name}</h5>
-                        <div className="d-flex justify-content-between align-items-center">
-                          <h6 className="card-subtitle text-muted">{product.category}</h6>
-                          <h5><span className="badge badge-pill badge-dark">{product.cost}pts</span></h5>
-                        </div>
-                        <BtnRedeem points={profile.points} cost={product.cost} onClick={this.redeemProduct(product._id, product.name)} />
+
+              <div className="container">
+                <div className="row justify-content-between align-items-center">
+                  <div className="col-auto">
+                    <h1>Electronic <span role="img" aria-label="electronic">💻</span></h1>
+                  </div>
+                  <div className="col-auto">
+                    <h3>{profile.points}pts available</h3>
+                  </div>
+                </div>
+                <div className="row justify-content-between align-items-center my-4">
+                  <div className="col-lg d-flex flex-row filter">
+                    <span className="filter-title">Filter by points</span> 
+                    <InputRange
+                      maxValue={4000}
+                      minValue={0}
+                      value={this.state.maxCost}
+                      onChange={(maxCost) => {
+                        this.setState({ maxCost });
+                      }}
+                      onChangeComplete={(newMaxCost) => {
+                        this.maxCostProduct(newMaxCost);
+                      }} />
+                  </div>
+                  <div className="col-auto">
+                    <div className="dropdown ml-3">
+                      <button className="dropdown-toggle" type="button" id="dropdownOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Order by {txtOrder} points
+                      </button>
+                      <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownOrder">
+                        <span className="dropdown-item" onClick={this.orderProduct('DESC') }>more points</span>
+                        <span className="dropdown-item" onClick={this.orderProduct('ASC') }>minor points</span>
                       </div>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
+              
+              <div className="container my-5">
+                <div className="row">
+                  {maxProducts.map(product => (
+                    <div className="col-12 col-md-4 col-lg-3 mb-3" key={product._id}>
+                      <div className="card">
+                        
+                        <img src={product.img.url} className="card-img-top" alt={product.name}></img>
+                        <div className="card-body">
+                          <h5 className="card-title">{product.name}</h5>
+                          <div className="d-flex justify-content-between align-items-center">
+                            <h6 className="card-subtitle text-muted">{product.category}</h6>
+                            <h5><span className="badge badge-pill badge-dark">{product.cost}pts</span></h5>
+                          </div>
+                          <BtnRedeem points={profile.points} cost={product.cost} onClick={this.redeemProduct(product._id, product.name)} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
             </div>
-            
-            
           </main>
           
 
-          <div className="zeynep-overlay"></div>
+          <div className="zeynep-overlay" onClick={this.closeSidebar}></div>
         
         </div>
       );
