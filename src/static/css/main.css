@@ -1,57 +1,11 @@
 html, body{
     font-family: 'Nunito', sans-serif;
 }
-html.zeynep-opened {
-	overflow-x: hidden;
+button:focus{
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  outline: 0;
 }
-
-html.zeynep-opened body {
-	position: fixed;
-	width: 100%;
-}
-
-html.zeynep-opened .zeynep {
-	pointer-events: auto;
-}
-
-.zeynep {
-	background-color: #ffffff;
-	bottom: 0;
-	color: #404143;
-	left: 0;
-	overflow: hidden;
-	overflow-y: auto;
-	pointer-events: none;
-	position: fixed;
-	top: 0;
-	transform: translateX(-100%);
-	z-index: 1011;
-	width: 0;
-	-webkit-overflow-scrolling: touch;
-}
-
-html:not(.no-transition) body,
-.zeynep:not(.no-transition),
-.zeynep .submenu:not(.no-transition) {
-	transition: all 375ms;
-	transition-property: left, right, transform;
-}
-
-.zeynep-overlay {
-	background-color: rgba(0, 0, 0, .42);;
-	bottom: 0;
-	display: none;
-	left: 0;
-	position: fixed;
-	right: 0;
-	top: 0;
-	z-index: 1010;
-}
-
-.zeynep-opened .zeynep-overlay {
-	display: block;
-}
-
 .hero{
     width: 100%;
     min-height: 300px;
@@ -68,6 +22,27 @@ h1{
 }
 h5, .h5{
     font-size: 1.15rem;
+}
+#dropdownOrder{
+	border: 0;
+}
+.dropdown-menu{
+	border: 0;
+	border-radius: 5px 0 5px 5px;
+    box-shadow: 0 7px 30px 0 rgba(0,0,0,.4);
+}
+.dropdown-item{
+	cursor: pointer;
+}
+.input-range{
+	margin-left: 15px;
+	width: 100%;
+	max-width: 300px;
+}
+.card-title{
+	white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 @media screen and (max-width: 1140px){
     .container{

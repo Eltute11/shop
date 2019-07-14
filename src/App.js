@@ -25,7 +25,8 @@ class App extends React.Component {
       maxProducts: {},
       maxCost: 0,
       error: null,
-      updatingMaxCost: true
+      updatingMaxCost: true,
+      txtOrder: 'minor'
     }
   }
 
@@ -97,7 +98,6 @@ class App extends React.Component {
               updatingMaxCost: false
             })
           }
-          
         }else{
           const error = new Error(result.error);
           throw error;
@@ -190,12 +190,33 @@ class App extends React.Component {
     this.setState({maxProducts: reduceProduct});
   }
 
+  orderProduct = order => () => {
+    const products = this.state.maxProducts;
+    let newOrderProducts = products.sort(function(a, b) {
+      var x = a['cost']; var y = b['cost'];
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    })
+    if(order === 'DESC'){
+      newOrderProducts = newOrderProducts.reverse();
+      this.setState({
+        txtOrder: 'more'
+      })
+    }else{
+      this.setState({
+        txtOrder: 'minor'
+      })
+    }
+    this.setState({
+      maxProducts: newOrderProducts
+    })
+  }
+
   componentDidMount() {
     this.getProfile();
   }
 
   render() {
-    const { error, isLoaded, profile, maxProducts, products } = this.state;
+    const { error, isLoaded, profile, maxProducts, txtOrder } = this.state;
     if(!isLoaded || error){
       return <div>Loading...</div>;
     }else{
@@ -210,9 +231,9 @@ class App extends React.Component {
                     <img src={logo} alt="logo" />
                   </div>
                   <div className="col-auto d-flex align-items-center">
-                    <span className="pr-4">Hola <b>{profile.name}</b>, tienes <b>{profile.points}pts</b></span>
+                    <span className="pr-4">Hello <b>{profile.name}</b>, you have <b>{profile.points}pts</b></span>
                     {/* <img src={imgUser} alt="user" className="user btn-open"/> */}
-                    <button type="button"  onClick={this.updatePoints(1000)} className="btn btn-outline-secondary">+ Puntos</button>
+                    <button type="button"  onClick={this.updatePoints(1000)} className="btn btn-outline-secondary">+ Pts</button>
                   </div>
                 </div>
               </div>
@@ -227,15 +248,15 @@ class App extends React.Component {
             <div className="container">
               <div className="row justify-content-between align-items-center">
                 <div className="col-auto">
-                  <h1>Electrónica 💻</h1>
+                  <h1>Electronic <span role="img" aria-label="electronic">💻</span></h1>
                 </div>
                 <div className="col-auto">
-                  <h3>{profile.points}pts Disponibles</h3>
+                  <h3>{profile.points}pts available</h3>
                 </div>
               </div>
               <div className="row justify-content-between align-items-center my-4">
-                <div className="col-lg-3 d-flex flex-row">
-                  <div><p>Filtrar por puntos</p></div> 
+                <div className="col-lg d-flex flex-row filter">
+                  <span className="filter-title">Filter by points</span> 
                   <InputRange
                     maxValue={4000}
                     minValue={0}
@@ -249,12 +270,12 @@ class App extends React.Component {
                 </div>
                 <div className="col-auto">
                   <div className="dropdown ml-3">
-                    <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Ordenar por menos puntos
+                    <button className="dropdown-toggle" type="button" id="dropdownOrder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Order by {txtOrder} points
                     </button>
-                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                      <a className="dropdown-item" href="#">más puntos</a>
-                      <a className="dropdown-item" href="#">menos puntos</a>
+                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownOrder">
+                      <span className="dropdown-item" onClick={this.orderProduct('DESC') }>more points</span>
+                      <span className="dropdown-item" onClick={this.orderProduct('ASC') }>minor points</span>
                     </div>
                   </div>
                 </div>
