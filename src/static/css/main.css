@@ -25,6 +25,7 @@ h5, .h5{
 }
 #dropdownOrder{
 	border: 0;
+    background: transparent;
 }
 .dropdown-menu{
 	border: 0;
@@ -33,6 +34,11 @@ h5, .h5{
 }
 .dropdown-item{
 	cursor: pointer;
+}
+.dropdown-item.active, 
+.dropdown-item:active {
+    color: #212529;
+    background-color: transparent;
 }
 .input-range{
 	margin-left: 15px;
@@ -113,7 +119,14 @@ h5, .h5{
     h6{
         font-size: 0.8rem;
     }
+    .zeynep{
+        padding: 40px 20px 50px;
+    }
     .zeynep .history span{
         font-size: 0.8rem;
+    }
+    .btn-points{
+        font-size: 0.7rem;
+        padding: 6px 12px;
     }
 }
